@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { v4 as uuid } from "uuid";
+import axios from "axios";
+
 import {
   DndContext,
   DragEndEvent,
@@ -36,6 +38,28 @@ function KanbanBoard() {
   );
 
   // Column events:
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/tasks", {
+          withCredentials: true,
+        });
+        const userData = response.data.data;
+
+        setColumns(
+          userData.map((col: any) => ({
+            id: col._id.toString(),
+            title: col.title,
+          })),
+        );
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   const createColumn = () => {
     const columnToAdd: Column = {
