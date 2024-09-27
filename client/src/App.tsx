@@ -2,13 +2,14 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import KanbanBoard from "./components/KanbanBoard";
 import Login from "./components/Login";
+import HomePage from "./components/HomePage";
 
 const App: React.FC = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/kanban" element={<KanbanBoard />} />
+        <Route path="/kanban" element={<HomePage />} />
       </Routes>
     </Router>
   );

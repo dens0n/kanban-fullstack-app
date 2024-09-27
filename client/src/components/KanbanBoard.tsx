@@ -189,7 +189,7 @@ function KanbanBoard() {
   }
 
   return (
-    <div className="m-auto flex min-h-screen w-full items-center overflow-x-auto overflow-y-hidden px-[40px]">
+    <div className="m-auto flex min-h-screen w-full items-center overflow-x-hidden overflow-y-hidden px-[40px]">
       <DndContext
         sensors={sensors}
         onDragStart={onDragStart}
