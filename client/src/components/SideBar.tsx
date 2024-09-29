@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowRight, ArrowLeft, LogOut, Plus, Trash2, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 //Types
 import { Project, Id } from "../types/types";
@@ -17,6 +18,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [inputText, setInputText] = useState<string>("");
   const [editMode, setEditMode] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProjects();
@@ -40,8 +42,11 @@ export default function SideBar({ onHandleProjectClick }: Props) {
       await axios.post(
         "http://localhost:3000/api/logout",
         {},
-        { withCredentials: true },
+        {
+          withCredentials: true,
+        },
       );
+      navigate("/");
     } catch (error) {
       console.error(error);
     }
@@ -80,6 +85,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
         { name },
         { withCredentials: true },
       );
+      setInputText("");
       fetchProjects();
     } catch (error) {
       console.error("Error updating project name:", error);

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Login: React.FC = () => {
+const Auth: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -78,4 +78,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Auth;
