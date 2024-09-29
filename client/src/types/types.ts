@@ -1,12 +1,21 @@
-export type Id = string | number;
+export type Id = string;
 
 export type Column = {
-  id: Id;
-  title: "To-do" | "In-progress" | "Blocked" | "Done" | string;
+  _id: Id;
+  title: "To Do" | "In Progress" | "Blocked" | "Done" | string;
+  tasks: Task[];
 };
 
 export type Task = {
-  id: Id;
+  _id: Id;
   columnId: Id;
   content: string;
+};
+
+export type Project = {
+  name: string;
+  _id: Id;
+  columns: Column[];
+  createdAt: string;
+  updatedAt: string;
 };

@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-import { v4 as uuid } from "uuid";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 import {
@@ -12,9 +11,9 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import { arrayMove } from "@dnd-kit/sortable";
 
-import { Plus } from "lucide-react";
+// import { Plus } from "lucide-react";
 import { Column, Id, Task } from "../types/types";
 import ColumnContainer from "./ColumnContainer";
 import { createPortal } from "react-dom";
@@ -26,129 +25,154 @@ import TaskCard from "./TaskCard";
 
 //
 
-function KanbanBoard() {
+type Props = {
+  activeProjectId: Id | null;
+};
+
+function KanbanBoard({ activeProjectId }: Props) {
   const [columns, setColumns] = useState<Column[]>([]);
-  const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
+  // const columnsId = useMemo(() => columns.map((col) => col._id), [columns]);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [activeColumn, setActiveColumn] = useState<Column | null>(null);
+  // const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 3 } }),
   );
 
-  // Column events:
+  const fetchColumns = async () => {
+    if (!activeProjectId) return;
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/projects/${activeProjectId}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      const dbData = response.data.data.columns;
+
+      setColumns(dbData);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  const fetchTasks = async () => {
+    if (!activeProjectId) return;
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/tasks/${activeProjectId}/tasks`,
+        {
+          withCredentials: true,
+        },
+      );
+      const dbData = response.data.data;
+      setTasks(dbData);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/api/tasks", {
-          withCredentials: true,
-        });
-        const userData = response.data.data;
-
-        setColumns(
-          userData.map((col: any) => ({
-            id: col._id.toString(),
-            title: col.title,
-          })),
-        );
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-
+    fetchColumns();
     fetchTasks();
-  }, []);
+  }, [activeProjectId]);
 
-  const createColumn = () => {
-    const columnToAdd: Column = {
-      id: uuid(),
-      title: `column ${columns.length + 1}`,
-    };
-
-    setColumns([...columns, columnToAdd]);
-  };
-
-  const deleteColumn = (id: Id) => {
-    const filteredColumns = columns.filter((col) => col.id !== id);
-    setColumns(filteredColumns);
-
-    const newTasks = tasks.filter((task) => task.columnId !== id);
-    setTasks(newTasks);
-  };
-
-  const updateColumn = (id: Id, title: string) => {
-    const newColumns = columns.map((col) => {
-      if (col.id !== id) return col;
-      return { ...col, title };
-    });
-    setColumns(newColumns);
+  const updateAllTasksToDB = async () => {
+    try {
+      await axios.patch(
+        `http://localhost:3000/api/tasks/${activeProjectId}/update-tasks`,
+        tasks,
+        {
+          withCredentials: true,
+        },
+      );
+    } catch (error: any) {
+      console.error(error.response.data.error);
+    }
   };
 
   // Task events:
+  // Klar
+  const createTask = async (columnId: Id) => {
+    try {
+      await axios.patch(
+        ` http://localhost:3000/api/tasks/add-task`,
+        {
+          projectId: activeProjectId,
+          columnId: columnId,
+        },
+        {
+          withCredentials: true,
+        },
+      );
 
-  const createTask = (columnId: Id) => {
-    const newTask: Task = {
-      id: uuid(),
-      columnId,
-      content: `task ${tasks.length + 1}`,
-    };
-    setTasks([...tasks, newTask]);
+      fetchTasks();
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
   };
 
-  const deleteTask = (id: Id) => {
-    const newTasks = tasks.filter((task) => task.id !== id);
-    setTasks(newTasks);
+  //Done
+  const deleteTask = async (id: Id) => {
+    if (!id) return;
+    try {
+      await axios.delete(` http://localhost:3000/api/tasks/${id}`, {
+        withCredentials: true,
+      });
+
+      fetchTasks();
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
   };
 
-  const updateTask = (id: Id, content: string) => {
-    const newTasks = tasks.map((task) => {
-      if (task.id !== id) return task;
-      return { ...task, content };
-    });
-    setTasks(newTasks);
+  //Done
+  const updateTask = async (id: Id, content: string) => {
+    if (!content) return;
+    try {
+      await axios.patch(
+        ` http://localhost:3000/api/tasks/${id}`,
+        {
+          newContent: content,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+
+      fetchTasks();
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
   };
 
   // Drag events:
 
   const onDragStart = (event: DragStartEvent) => {
-    if (event.active.data.current?.type === "Column") {
-      setActiveColumn(event.active.data.current.column);
-      return;
-    }
-
     if (event.active.data.current?.type === "Task") {
-      setActiveTask(event.active.data.current.task);
+      const activeTaskId = event.active.id;
+      const task = tasks.find((task) => task._id === activeTaskId) || null; // Fallback to null
+      setActiveTask(task);
+      // setActiveColumn(null); // Ensure activeColumn is reset
       return;
     }
+    // if (event.active.data.current?.type === "Column") {
+    //   setActiveColumn(event.active.data.current.column);
+    //   return;
+    // }
   };
 
-  function onDragEnd(event: DragEndEvent) {
-    setActiveColumn(null);
+  const onDragEnd = async (event: DragEndEvent) => {
+    // setActiveColumn(null);
     setActiveTask(null);
-    const { active, over } = event;
+    const { over } = event;
+
     if (!over) return;
 
-    const activeId = active.id;
-    const overId = over.id;
-
-    if (activeId === overId) return;
-
-    // Check if the dragged item is a column
-    if (
-      active.data.current?.type === "Column" &&
-      over.data.current?.type === "Column"
-    ) {
-      setColumns((columns) => {
-        const activeColumnIndex = columns.findIndex(
-          (col) => col.id === activeId,
-        );
-        const overColumnIndex = columns.findIndex((col) => col.id === overId);
-        return arrayMove(columns, activeColumnIndex, overColumnIndex);
-      });
-    }
-  }
+    updateAllTasksToDB();
+  };
 
   function onDragOver(event: DragOverEvent) {
     const { active, over } = event;
@@ -167,8 +191,8 @@ function KanbanBoard() {
 
     if (isActiveTask && isOverATask) {
       setTasks((tasks) => {
-        const activeIndex = tasks.findIndex((task) => task.id === activeId);
-        const overIndex = tasks.findIndex((task) => task.id === overId);
+        const activeIndex = tasks.findIndex((task) => task._id === activeId);
+        const overIndex = tasks.findIndex((task) => task._id === overId);
 
         tasks[activeIndex].columnId = tasks[overIndex].columnId;
 
@@ -179,65 +203,44 @@ function KanbanBoard() {
     const isOverAColumn = over.data.current?.type === "Column";
     if (isActiveTask && isOverAColumn) {
       setTasks((tasks) => {
-        const activeIndex = tasks.findIndex((task) => task.id === activeId);
+        const activeIndex = tasks.findIndex((task) => task._id === activeId);
 
-        tasks[activeIndex].columnId = overId;
-
-        return tasks;
+        const updatedTasks = tasks.map((task, index) => {
+          if (index === activeIndex) {
+            return { ...task, columnId: overId.toString() };
+          }
+          return task;
+        });
+        // tasks[activeIndex].columnId = overId; Fungerade inte så testar
+        return updatedTasks;
       });
     }
   }
 
   return (
-    <div className="m-auto flex min-h-screen w-full items-center overflow-x-hidden overflow-y-hidden px-[40px]">
+    <div className="flex w-full items-center justify-start overflow-y-hidden overflow-x-scroll px-[40px]">
       <DndContext
         sensors={sensors}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
         onDragOver={onDragOver}
       >
-        <div className="m-auto flex gap-4">
+        <div className="flex gap-4">
           <div className="flex gap-4">
-            <SortableContext items={columnsId}>
-              {columns.map((col) => (
-                <ColumnContainer
-                  key={col.id}
-                  column={col}
-                  deleteColumn={deleteColumn}
-                  updateColumn={updateColumn}
-                  createTask={createTask}
-                  tasks={tasks.filter((task) => task.columnId === col.id)}
-                  deleteTask={deleteTask}
-                  updateTask={updateTask}
-                />
-              ))}
-            </SortableContext>
-          </div>
-          {columns.length <= 3 && (
-            <button
-              onClick={() => createColumn()}
-              className="min-w[350px] flex h-[60px] w-[350px] cursor-pointer gap-2 rounded-lg border-2 border-columnBackgroundColor bg-mainBackgroundColor p-4 ring-rose-500 hover:ring-2"
-            >
-              <Plus />
-              Add Column
-            </button>
-          )}
-        </div>
-        {createPortal(
-          <DragOverlay>
-            {activeColumn && (
+            {columns.map((col) => (
               <ColumnContainer
-                column={activeColumn}
-                deleteColumn={deleteColumn}
-                updateColumn={updateColumn}
+                key={col._id}
+                column={col}
                 createTask={createTask}
-                tasks={tasks.filter(
-                  (task) => task.columnId === activeColumn.id,
-                )}
+                tasks={tasks.filter((task) => task.columnId === col._id)}
                 deleteTask={deleteTask}
                 updateTask={updateTask}
               />
-            )}
+            ))}
+          </div>
+        </div>
+        {createPortal(
+          <DragOverlay>
             {activeTask && (
               <TaskCard
                 task={activeTask}

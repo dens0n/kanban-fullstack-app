@@ -13,6 +13,7 @@ interface Props {
 function TaskCard({ task, deleteTask, updateTask }: Props) {
   const [mouseIsOver, setMouseIsOver] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [localContent, setLocalContent] = useState(task.content);
 
   const {
     setNodeRef,
@@ -22,7 +23,7 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
     transition,
     isDragging,
   } = useSortable({
-    id: task.id,
+    id: task._id,
     data: {
       type: "Task",
       task,
@@ -36,9 +37,13 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
   };
 
   const toggleEditMode = () => {
+    if (editMode) {
+      updateTask(task._id, localContent);
+    }
     setEditMode((prev) => !prev);
     setMouseIsOver(false);
   };
+
   if (isDragging) {
     return (
       <div
@@ -60,15 +65,20 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
       >
         <textarea
           className="h-[90%] w-full resize-none rounded border-none bg-transparent text-white focus:outline-none"
-          value={task.content}
+          value={localContent}
           autoFocus
-          placeholder="Enter task content"
+          placeholder="Enter task content..."
           onBlur={toggleEditMode}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && e.shiftKey) toggleEditMode();
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              toggleEditMode();
+            }
           }}
-          onChange={(e) => updateTask(task.id, e.target.value)}
-        ></textarea>
+          onChange={(e) => setLocalContent(e.target.value)}
+        >
+          {task.content}
+        </textarea>
       </div>
     );
   }
@@ -84,14 +94,18 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
       onMouseEnter={() => setMouseIsOver(true)}
       onMouseLeave={() => setMouseIsOver(false)}
     >
-      <p className="my-auto h-[90%] w-full overflow-y-auto overflow-x-hidden whitespace-pre-wrap">
-        {task.content}
-      </p>
+      <div className="my-auto h-[90%] w-full overflow-y-auto overflow-x-hidden whitespace-pre-wrap">
+        {task.content ? (
+          task.content
+        ) : (
+          <p className="text-gray-400">Enter task content...</p>
+        )}
+      </div>
       {mouseIsOver && (
         <button
           className="absolute right-4 top-1/2 -translate-y-1/2 rounded bg-columnBackgroundColor p-2 text-white opacity-60 hover:opacity-100"
           onClick={() => {
-            deleteTask(task.id);
+            deleteTask(task._id);
           }}
         >
           <Trash2 />
