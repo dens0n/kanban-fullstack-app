@@ -1,28 +1,35 @@
 import { Router } from 'express';
 import {
-    createTask,
-    getTasks,
-    updateTask,
+    addTaskToColumn,
+    moveTaskBetweenColumns,
+    getTasksByProjectId,
+    updateTaskContent,
     deleteTask,
-    getUserTasks,
-    assignTask,
+    updateMultipleTasks,
 } from '../controllers/taskController';
 import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 
-router.route('/my-tasks').get(authMiddleware, getUserTasks);
+router.route('/tasks/add-task').patch(authMiddleware, addTaskToColumn);
 
-router.route('/tasks/assign').patch(authMiddleware, assignTask);
+//Flytta task mellan Column
+router.route('/tasks/move-task').patch(authMiddleware, moveTaskBetweenColumns);
 
+// Hämta tasks för ett specifikt projekt
 router
-    .route('/tasks')
-    .get(authMiddleware, getTasks)
-    .post(authMiddleware, createTask);
-
+    .route('/tasks/:projectId/tasks')
+    .get(authMiddleware, getTasksByProjectId);
+    
+// Ny route för att uppdatera flera tasks
 router
-    .route('/tasks/:id')
-    .patch(authMiddleware, updateTask)
+    .route('/tasks/:projectId/update-tasks')
+    .patch(authMiddleware, updateMultipleTasks);
+
+// Uppdatera en specifik task
+router
+    .route('/tasks/:taskId')
+    .patch(authMiddleware, updateTaskContent)
     .delete(authMiddleware, deleteTask);
 
 export default router;

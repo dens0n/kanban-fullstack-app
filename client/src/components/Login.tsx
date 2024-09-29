@@ -28,7 +28,6 @@ const Login: React.FC = () => {
         throw new Error("Login failed");
       }
 
-      // If login is successful, navigate to the Kanban board
       navigate("/kanban");
     } catch (error) {
       console.log(error);
