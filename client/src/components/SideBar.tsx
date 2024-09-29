@@ -1,7 +1,10 @@
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowRight, ArrowLeft, LogOut } from "lucide-react";
-import { useEffect, useState } from "react";
+
+//Types
 import { Project, Id } from "../types/types";
+
 type Props = {
   onHandleProjectClick: (id: Id) => void;
 };
@@ -19,16 +22,6 @@ export default function SideBar({ onHandleProjectClick }: Props) {
         const userData = response.data.data;
 
         setProjects(userData);
-
-        // setProjects(
-        //   userData.map((project: Project) => ({
-        //     id: project._id.toString(),
-        //     name: project.name,
-        //     columns: project.columns,
-        //     createdAt: project.createdAt,
-        //     updatedAt: project.updatedAt,
-        //   })),
-        // );
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }

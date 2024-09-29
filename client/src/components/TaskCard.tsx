@@ -1,16 +1,18 @@
 import { useState } from "react";
-import { Id, Task } from "../types/types";
-import { Trash2 } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
+import { Trash2 } from "lucide-react";
+
+// Types
+import { Id, Task } from "../types/types";
 interface Props {
   task: Task;
   deleteTask: (id: Id) => void;
   updateTask: (id: Id, content: string) => void;
 }
 
-function TaskCard({ task, deleteTask, updateTask }: Props) {
+export default function TaskCard({ task, deleteTask, updateTask }: Props) {
   const [mouseIsOver, setMouseIsOver] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [localContent, setLocalContent] = useState(task.content);
@@ -114,5 +116,3 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
     </div>
   );
 }
-
-export default TaskCard;

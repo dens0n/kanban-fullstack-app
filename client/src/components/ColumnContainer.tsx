@@ -1,82 +1,52 @@
 import { useMemo } from "react";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
-// import { CSS } from "@dnd-kit/utilities";
-
-import { Column, Id, Task } from "../types/types";
 import { Plus } from "lucide-react";
-import TaskCard from "./TaskCard";
 
+// components
+import TaskCard from "./TaskCard";
+// Types
+import { Column, Id, Task } from "../types/types";
+
+// Proptypes
 interface Props {
   column: Column;
-
   tasks: Task[];
   createTask: (columnId: Id) => void;
   deleteTask: (id: Id) => void;
   updateTask: (id: Id, content: string) => void;
 }
-function ColumnContainer({
+
+export default function ColumnContainer({
   column,
   createTask,
   tasks,
   deleteTask,
   updateTask,
 }: Props) {
-  // const [editMode, setEditMode] = useState(false);
   const tasksIds = useMemo(() => tasks.map((task) => task._id), [tasks]);
 
-  const {
-    setNodeRef,
-    // attributes,
-    // listeners,
-    // transform,
-    // transition,
-    // isDragging,
-  } = useSortable({
+  const { setNodeRef } = useSortable({
     id: column._id,
     data: {
       type: "Column",
       column,
     },
-    disabled: true, // Disable dragging for columns
+    disabled: true,
   });
-
-  // const style = {
-  //   transition,
-  //   transform: CSS.Transform.toString(transform),
-  // };
-
-  // if (isDragging) {
-  //   return (
-  //     <div
-  //       ref={setNodeRef}
-  //       style={style}
-  //       className="flex h-[600px] max-h-[600px] w-[310px] flex-col rounded-md border-2 border-rose-500 bg-columnBackgroundColor opacity-60"
-  //     ></div>
-  //   );
-  // }
 
   return (
     <div
       ref={setNodeRef}
-      // style={style}
       className="flex h-[600px] max-h-[600px] w-[310px] flex-col rounded-md bg-columnBackgroundColor"
     >
       {/* Column title */}
-      <div
-        // {...attributes}
-        // {...listeners}
-        // onClick={() => setEditMode(true)}
-        className="text-md flex h-[60px] items-center justify-between rounded-md rounded-b-none border-4 border-columnBackgroundColor bg-mainBackgroundColor p-3 font-bold"
-      >
+      <div className="text-md flex h-[60px] items-center justify-between rounded-md rounded-b-none border-4 border-columnBackgroundColor bg-mainBackgroundColor p-3 font-bold">
         <div className="relative flex w-full items-center justify-center">
           <div className="absolute left-0 flex items-center justify-center rounded-full bg-columnBackgroundColor px-2 py-1 text-sm">
             {tasks.length}
           </div>
           <div>{column.title}</div>
         </div>
-        {/* <button className="rounded px-1 py-2 text-gray-500 hover:bg-columnBackgroundColor hover:text-white">
-          <Trash2 strokeWidth={2} />
-        </button> */}
       </div>
 
       {/* Column task container */}
@@ -108,5 +78,3 @@ function ColumnContainer({
     </div>
   );
 }
-
-export default ColumnContainer;

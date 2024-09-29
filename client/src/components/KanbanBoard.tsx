@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { createPortal } from "react-dom";
 import {
   DndContext,
   DragEndEvent,
@@ -13,32 +13,31 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
-// import { Plus } from "lucide-react";
-import { Column, Id, Task } from "../types/types";
+// Components
 import ColumnContainer from "./ColumnContainer";
-import { createPortal } from "react-dom";
 import TaskCard from "./TaskCard";
 
-//
+// Types
+import { Column, Id, Task } from "../types/types";
 
-//component:
-
-//
-
+// Proptypes
 type Props = {
   activeProjectId: Id | null;
 };
 
 function KanbanBoard({ activeProjectId }: Props) {
   const [columns, setColumns] = useState<Column[]>([]);
-  // const columnsId = useMemo(() => columns.map((col) => col._id), [columns]);
   const [tasks, setTasks] = useState<Task[]>([]);
-  // const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 3 } }),
   );
+
+  useEffect(() => {
+    fetchColumns();
+    fetchTasks();
+  }, [activeProjectId]);
 
   const fetchColumns = async () => {
     if (!activeProjectId) return;
@@ -74,10 +73,7 @@ function KanbanBoard({ activeProjectId }: Props) {
     }
   };
 
-  useEffect(() => {
-    fetchColumns();
-    fetchTasks();
-  }, [activeProjectId]);
+  // Task events:
 
   const updateAllTasksToDB = async () => {
     try {
@@ -93,8 +89,6 @@ function KanbanBoard({ activeProjectId }: Props) {
     }
   };
 
-  // Task events:
-  // Klar
   const createTask = async (columnId: Id) => {
     try {
       await axios.patch(
@@ -114,7 +108,6 @@ function KanbanBoard({ activeProjectId }: Props) {
     }
   };
 
-  //Done
   const deleteTask = async (id: Id) => {
     if (!id) return;
     try {
@@ -128,7 +121,6 @@ function KanbanBoard({ activeProjectId }: Props) {
     }
   };
 
-  //Done
   const updateTask = async (id: Id, content: string) => {
     if (!content) return;
     try {
@@ -148,33 +140,18 @@ function KanbanBoard({ activeProjectId }: Props) {
     }
   };
 
-  // Drag events:
+  // Drag And Drop Events:
 
   const onDragStart = (event: DragStartEvent) => {
     if (event.active.data.current?.type === "Task") {
       const activeTaskId = event.active.id;
       const task = tasks.find((task) => task._id === activeTaskId) || null; // Fallback to null
       setActiveTask(task);
-      // setActiveColumn(null); // Ensure activeColumn is reset
       return;
     }
-    // if (event.active.data.current?.type === "Column") {
-    //   setActiveColumn(event.active.data.current.column);
-    //   return;
-    // }
   };
 
-  const onDragEnd = async (event: DragEndEvent) => {
-    // setActiveColumn(null);
-    setActiveTask(null);
-    const { over } = event;
-
-    if (!over) return;
-
-    updateAllTasksToDB();
-  };
-
-  function onDragOver(event: DragOverEvent) {
+  const onDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     if (!over) return;
 
@@ -199,7 +176,6 @@ function KanbanBoard({ activeProjectId }: Props) {
         return arrayMove(tasks, activeIndex, overIndex);
       });
     }
-    // Dropping a task over a column
     const isOverAColumn = over.data.current?.type === "Column";
     if (isActiveTask && isOverAColumn) {
       setTasks((tasks) => {
@@ -211,11 +187,19 @@ function KanbanBoard({ activeProjectId }: Props) {
           }
           return task;
         });
-        // tasks[activeIndex].columnId = overId; Fungerade inte så testar
         return updatedTasks;
       });
     }
-  }
+  };
+
+  const onDragEnd = async (event: DragEndEvent) => {
+    setActiveTask(null);
+    const { over } = event;
+
+    if (!over) return;
+
+    updateAllTasksToDB();
+  };
 
   return (
     <div className="flex w-full items-center justify-start overflow-y-hidden overflow-x-scroll px-[40px]">
