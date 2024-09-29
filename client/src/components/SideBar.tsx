@@ -16,6 +16,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
   const [hoveredProjectId, setHoveredProjectId] = useState<Id | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [inputText, setInputText] = useState<string>("");
+  const [editMode, setEditMode] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProjects();
@@ -72,6 +73,19 @@ export default function SideBar({ onHandleProjectClick }: Props) {
     }
   };
 
+  const handleUpdateProjectName = async (id: string, name: string) => {
+    try {
+      await axios.patch(
+        `http://localhost:3000/api/projects/${id}`,
+        { name },
+        { withCredentials: true },
+      );
+      fetchProjects();
+    } catch (error) {
+      console.error("Error updating project name:", error);
+    }
+  };
+
   return (
     <div
       className={`flex h-screen ${
@@ -99,7 +113,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
         {isSidebarOpen && (
           <>
             {!isModalOpen ? (
-              <div className="flex flex-col gap-4">
+              <div className="animate-slideInFromLeft flex flex-col gap-4">
                 <button
                   onClick={() => setIsModalOpen(!isModalOpen)}
                   className="flex cursor-pointer items-center justify-between rounded-lg border-2 border-columnBackgroundColor bg-mainBackgroundColor px-1 py-1 text-gray-300 ring-sky-500 hover:text-sky-500 hover:ring-2"
@@ -115,20 +129,45 @@ export default function SideBar({ onHandleProjectClick }: Props) {
                       onMouseEnter={() => setHoveredProjectId(project._id)}
                       onMouseLeave={() => setHoveredProjectId(null)}
                     >
-                      <button
-                        key={project._id}
-                        onClick={() => {
-                          onHandleProjectClick(project._id);
-                          setActiveProjectId(project._id);
-                        }}
-                        className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border-2 border-columnBackgroundColor bg-mainBackgroundColor px-2 py-1 text-gray-300 ring-sky-500 hover:text-sky-500 hover:ring-2 ${
-                          activeProjectId === project._id
-                            ? "text-sky-500 ring-2 ring-sky-500"
-                            : ""
-                        }`}
-                      >
-                        {project.name}
-                      </button>
+                      {editMode === project._id ? (
+                        <input
+                          autoFocus
+                          type="text"
+                          value={inputText}
+                          onChange={(e) => setInputText(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              handleUpdateProjectName(project._id, inputText);
+                              setEditMode(null);
+                            }
+                          }}
+                          onBlur={() => {
+                            handleUpdateProjectName(project._id, inputText);
+                            setEditMode(null);
+                          }}
+                          className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border-2 border-columnBackgroundColor bg-mainBackgroundColor px-2 py-1 text-gray-300 ring-sky-500 hover:text-sky-500 hover:ring-2 ${
+                            activeProjectId === project._id
+                              ? "text-sky-500 ring-2 ring-sky-500"
+                              : ""
+                          }`}
+                        />
+                      ) : (
+                        <button
+                          key={project._id}
+                          onClick={() => {
+                            onHandleProjectClick(project._id);
+                            setActiveProjectId(project._id);
+                          }}
+                          onDoubleClick={() => setEditMode(project._id)}
+                          className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border-2 border-columnBackgroundColor bg-mainBackgroundColor px-2 py-1 text-gray-300 ring-sky-500 hover:text-sky-500 hover:ring-2 ${
+                            activeProjectId === project._id
+                              ? "text-sky-500 ring-2 ring-sky-500"
+                              : ""
+                          }`}
+                        >
+                          {project.name}
+                        </button>
+                      )}
                       {hoveredProjectId === project._id ||
                       activeProjectId === project._id ? (
                         <button
@@ -144,7 +183,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
                   ))}
               </div>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div className="animate-slideInFromLeft flex flex-col gap-4">
                 <div>
                   <button
                     onClick={() => {
