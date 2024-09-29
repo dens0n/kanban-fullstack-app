@@ -12,7 +12,7 @@ export default function HomePage() {
 
   return (
     <div className="flex">
-      <SideBar onHandleProjectClick={handleProjectClick} />
+      <SideBar onHandleProjectClick={handleProjectClick}/>
       <KanbanBoard activeProjectId={activeProjectId} />
     </div>
   );
