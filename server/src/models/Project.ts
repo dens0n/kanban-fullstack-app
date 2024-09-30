@@ -8,7 +8,7 @@ const taskSchema = new Schema({
 const columnSchema = new Schema({
     title: { type: String, required: true },
     tasks: [taskSchema],
-    maxTasks: { type: Number, default: 5 },
+    // maxTasks: { type: Number, default: 5 },
 });
 
 const projectSchema = new Schema({
