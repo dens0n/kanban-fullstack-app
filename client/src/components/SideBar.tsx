@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function SideBar({ onHandleProjectClick }: Props) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProjectId, setActiveProjectId] = useState<Id | null>(null);
   const [hoveredProjectId, setHoveredProjectId] = useState<Id | null>(null);
