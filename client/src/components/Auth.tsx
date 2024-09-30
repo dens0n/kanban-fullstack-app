@@ -14,7 +14,7 @@ const Auth: React.FC = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.DB_API_URL}/api/login`,
+        `https://trullo-backend.onrender.com/api/login`,
         { email, password },
         {
           headers: {

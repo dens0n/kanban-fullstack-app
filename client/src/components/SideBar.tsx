@@ -27,7 +27,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
   const fetchProjects = async () => {
     try {
       const response = await axios.get(
-        `${process.env.DB_API_URL}/api/projects`,
+        `https://trullo-backend.onrender.com/api/projects`,
         {
           withCredentials: true,
         },
@@ -43,7 +43,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
   const signOut = async () => {
     try {
       await axios.post(
-        `${process.env.DB_API_URL}/api/logout`,
+        `https://trullo-backend.onrender.com/api/logout`,
         {},
         {
           withCredentials: true,
@@ -58,7 +58,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
   const handleNewProjectSubmit = async () => {
     try {
       await axios.post(
-        `${process.env.DB_API_URL}/api/projects`,
+        `https://trullo-backend.onrender.com/api/projects`,
         { name: inputText },
         { withCredentials: true },
       );
@@ -72,9 +72,12 @@ export default function SideBar({ onHandleProjectClick }: Props) {
 
   const deleteProject = async (id: Id) => {
     try {
-      await axios.delete(`${process.env.DB_API_URL}/api/projects/${id}`, {
-        withCredentials: true,
-      });
+      await axios.delete(
+        `https://trullo-backend.onrender.com/api/projects/${id}`,
+        {
+          withCredentials: true,
+        },
+      );
       fetchProjects();
     } catch (error) {
       console.error("Error deleting project:", error);
@@ -84,7 +87,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
   const handleUpdateProjectName = async (id: string, name: string) => {
     try {
       await axios.patch(
-        `${process.env.DB_API_URL}/api/projects/${id}`,
+        `https://trullo-backend.onrender.com/api/projects/${id}`,
         { name },
         { withCredentials: true },
       );

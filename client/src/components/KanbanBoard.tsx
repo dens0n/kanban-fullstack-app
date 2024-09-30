@@ -44,7 +44,7 @@ function KanbanBoard({ activeProjectId }: Props) {
     if (!activeProjectId) return;
     try {
       const response = await axios.get(
-        `${process.env.DB_API_URL}/api/projects/${activeProjectId}`,
+        `https://trullo-backend.onrender.com/api/projects/${activeProjectId}`,
         {
           withCredentials: true,
         },
@@ -62,7 +62,7 @@ function KanbanBoard({ activeProjectId }: Props) {
     if (!activeProjectId) return;
     try {
       const response = await axios.get(
-        `${process.env.DB_API_URL}/api/tasks/${activeProjectId}/tasks`,
+        `https://trullo-backend.onrender.com/api/tasks/${activeProjectId}/tasks`,
         {
           withCredentials: true,
         },
@@ -79,7 +79,7 @@ function KanbanBoard({ activeProjectId }: Props) {
   const updateAllTasksToDB = async () => {
     try {
       await axios.patch(
-        `${process.env.DB_API_URL}/api/tasks/${activeProjectId}/update-tasks`,
+        `https://trullo-backend.onrender.com/api/tasks/${activeProjectId}/update-tasks`,
         tasks,
         {
           withCredentials: true,
@@ -94,7 +94,7 @@ function KanbanBoard({ activeProjectId }: Props) {
   const createTask = async (columnId: Id) => {
     try {
       await axios.patch(
-        `${process.env.DB_API_URL}/api/tasks/add-task`,
+        `https://trullo-backend.onrender.com/api/tasks/add-task`,
         {
           projectId: activeProjectId,
           columnId: columnId,
@@ -113,7 +113,7 @@ function KanbanBoard({ activeProjectId }: Props) {
   const deleteTask = async (id: Id) => {
     if (!id) return;
     try {
-      await axios.delete(`${process.env.DB_API_URL}/api/tasks/${id}`, {
+      await axios.delete(`https://trullo-backend.onrender.com/api/tasks/${id}`, {
         withCredentials: true,
       });
 
@@ -127,7 +127,7 @@ function KanbanBoard({ activeProjectId }: Props) {
     if (!content) return;
     try {
       await axios.patch(
-        `${process.env.DB_API_URL}/api/tasks/${id}`,
+        `https://trullo-backend.onrender.com/api/tasks/${id}`,
         {
           newContent: content,
         },
