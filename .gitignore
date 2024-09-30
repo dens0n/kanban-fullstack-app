@@ -7,6 +7,7 @@
 
 # Logs
 /client/logs
+/client/.env
 /client/*.log
 /client/npm-debug.log*
 /client/yarn-debug.log*
