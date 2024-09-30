@@ -27,7 +27,7 @@ const Auth: React.FC = () => {
       console.log(response.data);
 
       if (isLogin) {
-        sessionStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("isLoggedIn", "true");
         navigate("/kanban");
       } else {
         setAuthState("Log in");
@@ -36,7 +36,7 @@ const Auth: React.FC = () => {
       }
     } catch (error) {
       console.log(error);
-      sessionStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("isLoggedIn");
       setError(
         `${authState} failed. Please check your credentials and try again.`,
       );

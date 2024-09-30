@@ -6,7 +6,7 @@ type PrivateRoutesProps = {
 
 function PrivateRoutes({ route }: PrivateRoutesProps) {
   const location = useLocation();
-  const isAuth = sessionStorage.getItem("isLoggedIn") === "true";
+  const isAuth = localStorage.getItem("isLoggedIn") === "true";
 
   return (
     <>

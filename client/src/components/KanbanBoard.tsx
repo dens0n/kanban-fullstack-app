@@ -56,7 +56,7 @@ function KanbanBoard({ activeProjectId }: Props) {
 
       setColumns(dbData);
     } catch (error) {
-      sessionStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
       window.location.reload();
     }
@@ -74,7 +74,7 @@ function KanbanBoard({ activeProjectId }: Props) {
       const dbData = response.data.data;
       setTasks(dbData);
     } catch (error) {
-      sessionStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
       window.location.reload();
     }
@@ -93,7 +93,7 @@ function KanbanBoard({ activeProjectId }: Props) {
       );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      sessionStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("isLoggedIn");
       console.error(error.response.data.error);
       window.location.reload();
     }
@@ -114,7 +114,7 @@ function KanbanBoard({ activeProjectId }: Props) {
 
       fetchTasks();
     } catch (error) {
-      sessionStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
       window.location.reload();
     }
@@ -132,7 +132,7 @@ function KanbanBoard({ activeProjectId }: Props) {
 
       fetchTasks();
     } catch (error) {
-      sessionStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
       window.location.reload();
     }
@@ -153,7 +153,7 @@ function KanbanBoard({ activeProjectId }: Props) {
 
       fetchTasks();
     } catch (error) {
-      sessionStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
       window.location.reload();
     }

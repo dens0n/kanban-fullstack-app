@@ -36,7 +36,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
 
       setProjects(userData);
     } catch (error) {
-      sessionStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
       window.location.reload();
     }
@@ -51,10 +51,10 @@ export default function SideBar({ onHandleProjectClick }: Props) {
           withCredentials: true,
         },
       );
-      sessionStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("isLoggedIn");
       navigate("/");
     } catch (error) {
-      sessionStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("isLoggedIn");
       console.error(error);
       window.location.reload();
     }
@@ -71,7 +71,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
       setIsModalOpen(false);
       fetchProjects();
     } catch (error) {
-      sessionStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("isLoggedIn");
       console.error("Error creating project:", error);
       window.location.reload();
     }
@@ -88,7 +88,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
       fetchProjects();
       onHandleProjectClick(null);
     } catch (error) {
-      sessionStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("isLoggedIn");
       console.error("Error deleting project:", error);
       window.location.reload();
     }
@@ -104,7 +104,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
       setInputText("");
       fetchProjects();
     } catch (error) {
-      sessionStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("isLoggedIn");
       console.error("Error updating project name:", error);
       window.location.reload();
     }
