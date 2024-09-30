@@ -17,9 +17,9 @@ export const addTaskToColumn = async (req: Request, res: Response) => {
             return res.status(404).json({ error: 'Column not found' });
         }
 
-        if (column.tasks.length >= column.maxTasks) {
-            return res.status(400).json({ error: 'Max task limit reached' });
-        }
+        // if (column.tasks.length >= column.maxTasks) {
+        //     return res.status(400).json({ error: 'Max task limit reached' });
+        // }
 
         column.tasks.push({ content: taskContent, columnId: columnId });
         await project.save();
@@ -35,57 +35,58 @@ export const addTaskToColumn = async (req: Request, res: Response) => {
 
 export const moveTaskBetweenColumns = async (req: Request, res: Response) => {
     try {
-        const { projectId, taskId, sourceColumnId, destinationColumnId } =
-            req.body;
+        const { projectId, taskId, destinationColumnId } = req.body;
 
-        // Hämta projektet
+        // 1. Hämta projektet
         const project = await Project.findById(projectId);
         if (!project) {
             return res.status(404).json({ error: 'Project not found' });
         }
 
-        // Hitta källkolumnen och destinationskolumnen
-        const sourceColumn = project.columns.id(sourceColumnId);
-        const destinationColumn = project.columns.id(destinationColumnId);
+        // 2. Hitta uppgiften i projektet och dess nuvarande kolumn
+        const task = project.columns
+            .flatMap((column) => column.tasks)
+            .find((task) => task._id.toString() === taskId);
 
-        if (!sourceColumn || !destinationColumn) {
-            return res
-                .status(404)
-                .json({ error: 'Source or destination column not found' });
-        }
-
-        // Hitta uppgiften i källkolumnen med hjälp av MongoDB-uppföljning
-        const task = sourceColumn.tasks.id(taskId);
         if (!task) {
             return res
                 .status(404)
-                .json({ error: 'Task not found in source column' });
+                .json({ error: 'Task not found in any column' });
         }
 
-        // Ta bort uppgiften från källkolumnen med hjälp av MongoDB-uppföljning
-        sourceColumn.tasks.pull(task);
+        // Hämta källkolumnens ID
+        const sourceColumnId = project?.columns.find((column) =>
+            column.tasks.some((t) => t._id.toString() === taskId)
+        )?._id; // Added optional chaining to handle undefined case
 
-        // Uppdatera columnId på uppgiften för att matcha destinationskolumnen
-        task.columnId = destinationColumnId;
+        // 3. Ta bort uppgiften från källkolumnen
+        await Project.findOneAndUpdate(
+            { _id: projectId, 'columns._id': sourceColumnId },
+            { $pull: { 'columns.$.tasks': { _id: taskId } } },
+            { new: true }
+        );
 
-        // Kontrollera att destinationskolumnen inte överskrider max antal uppgifter
-        if (destinationColumn.tasks.length >= destinationColumn.maxTasks) {
-            return res.status(400).json({
-                error: 'Max task limit reached in destination column',
-            });
-        }
-
-        // Lägg till uppgiften i destinationskolumnen med uppdaterad columnId med hjälp av MongoDB-uppföljning
-        destinationColumn.tasks.push(task);
-
-        // Spara ändringarna i projektet
-        await project.save();
+        // 4. Lägg till uppgiften i destinationskolumnen
+        await Project.findOneAndUpdate(
+            { _id: projectId, 'columns._id': destinationColumnId },
+            {
+                $push: {
+                    'columns.$.tasks': {
+                        _id: taskId,
+                        content: task.content, // Bevara taskens innehåll
+                        columnId: destinationColumnId, // Sätt columnId till destination
+                    },
+                },
+            },
+            { new: true }
+        );
 
         res.status(200).json({
             status: 'success',
-            data: project,
+            data: { projectId, taskId, destinationColumnId },
         });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Failed to move task' });
     }
 };
@@ -222,46 +223,56 @@ export const deleteTask = async (req: Request, res: Response) => {
 };
 
 export const updateMultipleTasks = async (req: Request, res: Response) => {
-    try {
-        const { projectId } = req.params;
-        const tasksData = req.body; // Array av task data
+    const { projectId } = req.params;
+    const tasksToUpdate = req.body;
 
-        // Hämta projektet
+    try {
+        // Hämta projektet baserat på projectId
         const project = await Project.findById(projectId);
+
         if (!project) {
-            return res
-                .status(404)
-                .json({ status: 'fail', error: 'Project not found' });
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Project not found',
+            });
         }
 
-        // Uppdatera varje task
-        for (const taskData of tasksData) {
-            const { _id, columnId } = taskData;
+        // Loopa genom varje task i request-body:n
+        tasksToUpdate.forEach(
+            (task: { _id: string; content: string; columnId: string }) => {
+                const { _id, content, columnId } = task;
 
-            // Hitta tasken i projektet
-            let task;
-            for (const column of project.columns) {
-                task = column.tasks.id(_id); // Hitta tasken med rätt ID
-                if (task) {
-                    task.columnId = columnId; // Uppdatera columnId
-                    break; // Avsluta loop om tasken hittas
+                // Leta upp kolumnen där tasken för närvarande är
+                project.columns.forEach((column) => {
+                    const taskIndex = column.tasks.findIndex(
+                        (t) => t._id.toString() === _id
+                    );
+
+                    if (taskIndex !== -1) {
+                        // Ta bort tasken från den nuvarande kolumnen
+                        column.tasks.splice(taskIndex, 1);
+                    }
+                });
+
+                // Hitta kolumnen där tasken ska placeras
+                const newColumn = project.columns.find(
+                    (col) => col._id.toString() === columnId
+                );
+
+                if (newColumn) {
+                    // Flytta task till den nya kolumnen
+                    newColumn.tasks.push({ _id, content, columnId });
                 }
             }
+        );
 
-            if (!task) {
-                return res.status(404).json({
-                    status: 'fail',
-                    error: `Task with ID ${_id} not found`,
-                });
-            }
-        }
-
-        // Spara projektet med uppdaterade tasks
+        // Spara de uppdaterade kolumnerna och tasksen i databasen
         await project.save();
 
         res.status(200).json({
             status: 'success',
-            data: project,
+            message: 'Tasks updated successfully',
+            project,
         });
     } catch (error) {
         res.status(500).json({
