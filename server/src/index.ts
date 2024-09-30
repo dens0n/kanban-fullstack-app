@@ -11,7 +11,7 @@ const app: Express = express();
 
 app.use(
     cors({
-        origin: process.env.CLIENT_URL, // Tillåt endast denna domän
+        origin: 'http://localhost:3000', // Tillåt endast denna domän
         credentials: true, // Tillåter att cookies skickas med förfrågningar
     })
 );

@@ -26,12 +26,9 @@ export default function SideBar({ onHandleProjectClick }: Props) {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get(
-        `https://trullo-backend.onrender.com/api/projects`,
-        {
-          withCredentials: true,
-        },
-      );
+      const response = await axios.get(`http://localhost:3000/api/projects`, {
+        withCredentials: true,
+      });
       const userData = response.data.data;
 
       setProjects(userData);
@@ -43,7 +40,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
   const signOut = async () => {
     try {
       await axios.post(
-        `https://trullo-backend.onrender.com/api/logout`,
+        `http://localhost:3000/api/logout`,
         {},
         {
           withCredentials: true,
@@ -58,7 +55,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
   const handleNewProjectSubmit = async () => {
     try {
       await axios.post(
-        `https://trullo-backend.onrender.com/api/projects`,
+        `http://localhost:3000/api/projects`,
         { name: inputText },
         { withCredentials: true },
       );
@@ -72,12 +69,9 @@ export default function SideBar({ onHandleProjectClick }: Props) {
 
   const deleteProject = async (id: Id) => {
     try {
-      await axios.delete(
-        `https://trullo-backend.onrender.com/api/projects/${id}`,
-        {
-          withCredentials: true,
-        },
-      );
+      await axios.delete(`http://localhost:3000/api/projects/${id}`, {
+        withCredentials: true,
+      });
       fetchProjects();
     } catch (error) {
       console.error("Error deleting project:", error);
@@ -87,7 +81,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
   const handleUpdateProjectName = async (id: string, name: string) => {
     try {
       await axios.patch(
-        `https://trullo-backend.onrender.com/api/projects/${id}`,
+        `http://localhost:3000/api/projects/${id}`,
         { name },
         { withCredentials: true },
       );
