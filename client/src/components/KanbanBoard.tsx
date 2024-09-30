@@ -46,7 +46,7 @@ function KanbanBoard({ activeProjectId }: Props) {
     if (!activeProjectId) return;
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/projects/${activeProjectId}`,
+        `${import.meta.env.VITE_DATABASE_URL}/api/projects/${activeProjectId}`,
         {
           withCredentials: true,
         },
@@ -66,7 +66,7 @@ function KanbanBoard({ activeProjectId }: Props) {
     if (!activeProjectId) return;
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/tasks/${activeProjectId}/tasks`,
+        `${import.meta.env.VITE_DATABASE_URL}/api/tasks/${activeProjectId}/tasks`,
         {
           withCredentials: true,
         },
@@ -85,7 +85,7 @@ function KanbanBoard({ activeProjectId }: Props) {
   const updateAllTasksToDB = async () => {
     try {
       await axios.patch(
-        `http://localhost:3000/api/tasks/${activeProjectId}/update-tasks`,
+        `${import.meta.env.VITE_DATABASE_URL}/api/tasks/${activeProjectId}/update-tasks`,
         tasks,
         {
           withCredentials: true,
@@ -102,7 +102,7 @@ function KanbanBoard({ activeProjectId }: Props) {
   const createTask = async (columnId: Id) => {
     try {
       await axios.patch(
-        `http://localhost:3000/api/tasks/add-task`,
+        `${import.meta.env.VITE_DATABASE_URL}/api/tasks/add-task`,
         {
           projectId: activeProjectId,
           columnId: columnId,
@@ -123,9 +123,12 @@ function KanbanBoard({ activeProjectId }: Props) {
   const deleteTask = async (id: Id) => {
     if (!id) return;
     try {
-      await axios.delete(`http://localhost:3000/api/tasks/${id}`, {
-        withCredentials: true,
-      });
+      await axios.delete(
+        `${import.meta.env.VITE_DATABASE_URL}/api/tasks/${id}`,
+        {
+          withCredentials: true,
+        },
+      );
 
       fetchTasks();
     } catch (error) {
@@ -139,7 +142,7 @@ function KanbanBoard({ activeProjectId }: Props) {
     if (!content) return;
     try {
       await axios.patch(
-        `http://localhost:3000/api/tasks/${id}`,
+        `${import.meta.env.VITE_DATABASE_URL}/api/tasks/${id}`,
         {
           newContent: content,
         },

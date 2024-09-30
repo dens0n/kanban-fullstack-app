@@ -19,7 +19,7 @@ const Auth: React.FC = () => {
     try {
       console.log(name, email, password);
       const response = await axios.post(
-        `http://localhost:3000/api/${endpoint}`,
+        `${import.meta.env.VITE_DATABASE_URL}/api/${endpoint}`,
         isLogin ? { email, password } : { name, email, password },
         isLogin ? { withCredentials: true } : {},
       );
