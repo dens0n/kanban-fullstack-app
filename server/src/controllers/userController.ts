@@ -39,6 +39,8 @@ export const loginUser = async (req: Request, res: Response) => {
         res.status(200)
             .cookie('token', token, {
                 httpOnly: true,
+                secure: true, // Endast via HTTPS
+                sameSite: 'none', // Skickas över domäner
             })
             .json({
                 status: 'success',
