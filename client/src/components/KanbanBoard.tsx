@@ -58,7 +58,6 @@ function KanbanBoard({ activeProjectId }: Props) {
     } catch (error) {
       localStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
-      window.location.reload();
     }
   };
 
@@ -76,7 +75,6 @@ function KanbanBoard({ activeProjectId }: Props) {
     } catch (error) {
       localStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
-      window.location.reload();
     }
   };
 
@@ -95,7 +93,6 @@ function KanbanBoard({ activeProjectId }: Props) {
     } catch (error: any) {
       localStorage.removeItem("isLoggedIn");
       console.error(error.response.data.error);
-      window.location.reload();
     }
   };
 
@@ -116,7 +113,6 @@ function KanbanBoard({ activeProjectId }: Props) {
     } catch (error) {
       localStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
-      window.location.reload();
     }
   };
 
@@ -134,7 +130,6 @@ function KanbanBoard({ activeProjectId }: Props) {
     } catch (error) {
       localStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
-      window.location.reload();
     }
   };
   //remove isLogged in from session storage and reload the page
@@ -155,7 +150,6 @@ function KanbanBoard({ activeProjectId }: Props) {
     } catch (error) {
       localStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
-      window.location.reload();
     }
   };
 

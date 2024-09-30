@@ -38,7 +38,6 @@ export default function SideBar({ onHandleProjectClick }: Props) {
     } catch (error) {
       localStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
-      window.location.reload();
     }
   };
 
@@ -56,7 +55,6 @@ export default function SideBar({ onHandleProjectClick }: Props) {
     } catch (error) {
       localStorage.removeItem("isLoggedIn");
       console.error(error);
-      window.location.reload();
     }
   };
 
@@ -73,7 +71,6 @@ export default function SideBar({ onHandleProjectClick }: Props) {
     } catch (error) {
       localStorage.removeItem("isLoggedIn");
       console.error("Error creating project:", error);
-      window.location.reload();
     }
   };
 
@@ -90,7 +87,6 @@ export default function SideBar({ onHandleProjectClick }: Props) {
     } catch (error) {
       localStorage.removeItem("isLoggedIn");
       console.error("Error deleting project:", error);
-      window.location.reload();
     }
   };
 
@@ -106,7 +102,6 @@ export default function SideBar({ onHandleProjectClick }: Props) {
     } catch (error) {
       localStorage.removeItem("isLoggedIn");
       console.error("Error updating project name:", error);
-      window.location.reload();
     }
   };
 
