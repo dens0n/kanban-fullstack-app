@@ -57,6 +57,7 @@ Skapa en `.env`-fil i `server`-mappen och lägg till följande:
 ```env
 DB_URI=din_mongodb_uri
 JWT_SECRET=din_hemliga_nyckel
+PORT=portnummer
 ```
 
 ### Starta applikationen
