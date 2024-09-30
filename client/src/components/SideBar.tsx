@@ -26,9 +26,12 @@ export default function SideBar({ onHandleProjectClick }: Props) {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/projects`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${process.env.DB_API_URL}/api/projects`,
+        {
+          withCredentials: true,
+        },
+      );
       const userData = response.data.data;
 
       setProjects(userData);
@@ -40,7 +43,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
   const signOut = async () => {
     try {
       await axios.post(
-        "http://localhost:3000/api/logout",
+        `${process.env.DB_API_URL}/api/logout`,
         {},
         {
           withCredentials: true,
@@ -55,7 +58,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
   const handleNewProjectSubmit = async () => {
     try {
       await axios.post(
-        "http://localhost:3000/api/projects",
+        `${process.env.DB_API_URL}/api/projects`,
         { name: inputText },
         { withCredentials: true },
       );
@@ -69,7 +72,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
 
   const deleteProject = async (id: Id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/projects/${id}`, {
+      await axios.delete(`${process.env.DB_API_URL}/api/projects/${id}`, {
         withCredentials: true,
       });
       fetchProjects();
@@ -81,7 +84,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
   const handleUpdateProjectName = async (id: string, name: string) => {
     try {
       await axios.patch(
-        `http://localhost:3000/api/projects/${id}`,
+        `${process.env.DB_API_URL}/api/projects/${id}`,
         { name },
         { withCredentials: true },
       );
