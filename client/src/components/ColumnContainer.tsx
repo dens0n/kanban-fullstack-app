@@ -42,7 +42,9 @@ export default function ColumnContainer({
       {/* Column title */}
       <div className="text-md flex h-[60px] items-center justify-between rounded-md rounded-b-none border-4 border-columnBackgroundColor bg-mainBackgroundColor p-3 font-bold">
         <div className="relative flex w-full items-center justify-center">
-          <div className="absolute left-0 flex items-center justify-center rounded-full bg-columnBackgroundColor px-2 py-1 text-sm">
+          <div
+            className={`absolute left-0 flex items-center justify-center rounded-full bg-columnBackgroundColor px-2 py-1 text-sm ${tasks.length >= 5 ? "text-yellow-500" : ""} ${tasks.length >= 10 ? "text-rose-500" : ""}`}
+          >
             {tasks.length}
           </div>
           <div>{column.title}</div>
