@@ -211,8 +211,9 @@ function KanbanBoard({ activeProjectId }: Props) {
   const onDragEnd = async (event: DragEndEvent) => {
     setActiveTask(null);
     const { over } = event;
-
     if (!over) return;
+
+    console.log(over);
 
     updateAllTasksToDB();
   };
