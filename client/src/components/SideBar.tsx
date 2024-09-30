@@ -33,6 +33,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
 
       setProjects(userData);
     } catch (error) {
+      sessionStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
     }
   };
@@ -46,8 +47,10 @@ export default function SideBar({ onHandleProjectClick }: Props) {
           withCredentials: true,
         },
       );
+      sessionStorage.removeItem("isLoggedIn");
       navigate("/");
     } catch (error) {
+      sessionStorage.removeItem("isLoggedIn");
       console.error(error);
     }
   };
@@ -63,6 +66,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
       setIsModalOpen(false);
       fetchProjects();
     } catch (error) {
+      sessionStorage.removeItem("isLoggedIn");
       console.error("Error creating project:", error);
     }
   };
@@ -74,6 +78,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
       });
       fetchProjects();
     } catch (error) {
+      sessionStorage.removeItem("isLoggedIn");
       console.error("Error deleting project:", error);
     }
   };
@@ -88,6 +93,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
       setInputText("");
       fetchProjects();
     } catch (error) {
+      sessionStorage.removeItem("isLoggedIn");
       console.error("Error updating project name:", error);
     }
   };
