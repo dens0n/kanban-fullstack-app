@@ -4,15 +4,15 @@ import SideBar from "./SideBar";
 import { Id } from "../types/types";
 
 export default function HomePage() {
-  const [activeProjectId, setActiveProjectId] = useState<Id|null>(null);
+  const [activeProjectId, setActiveProjectId] = useState<Id | null>(null);
 
-  const handleProjectClick = (id: string) => {
+  const handleProjectClick = (id: string | null) => {
     setActiveProjectId(id);
   };
 
   return (
     <div className="flex">
-      <SideBar onHandleProjectClick={handleProjectClick}/>
+      <SideBar onHandleProjectClick={handleProjectClick} />
       <KanbanBoard activeProjectId={activeProjectId} />
     </div>
   );

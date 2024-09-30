@@ -55,7 +55,7 @@ const Auth: React.FC = () => {
 
   return (
     <div className="flex h-screen flex-col items-center justify-center">
-      <div className="relative flex h-[600px] w-[800px] rounded-2xl flex-col items-center justify-start gap-20 bg-columnBackgroundColor p-16">
+      <div className="relative flex h-[600px] w-[800px] flex-col items-center justify-start gap-20 rounded-2xl bg-columnBackgroundColor p-16">
         <button
           onClick={toggleAuthState}
           className="absolute right-0 top-0 m-10 rounded-lg border-2 border-gray-300 px-3 py-1 text-gray-300 hover:border-gray-50 hover:text-gray-50"

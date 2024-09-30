@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Project, Id } from "../types/types";
 
 type Props = {
-  onHandleProjectClick: (id: Id) => void;
+  onHandleProjectClick: (id: Id | null) => void;
 };
 
 export default function SideBar({ onHandleProjectClick }: Props) {
@@ -35,6 +35,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
     } catch (error) {
       sessionStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
+      window.location.reload();
     }
   };
 
@@ -52,6 +53,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
     } catch (error) {
       sessionStorage.removeItem("isLoggedIn");
       console.error(error);
+      window.location.reload();
     }
   };
 
@@ -68,6 +70,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
     } catch (error) {
       sessionStorage.removeItem("isLoggedIn");
       console.error("Error creating project:", error);
+      window.location.reload();
     }
   };
 
@@ -77,9 +80,11 @@ export default function SideBar({ onHandleProjectClick }: Props) {
         withCredentials: true,
       });
       fetchProjects();
+      onHandleProjectClick(null);
     } catch (error) {
       sessionStorage.removeItem("isLoggedIn");
       console.error("Error deleting project:", error);
+      window.location.reload();
     }
   };
 
@@ -95,6 +100,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
     } catch (error) {
       sessionStorage.removeItem("isLoggedIn");
       console.error("Error updating project name:", error);
+      window.location.reload();
     }
   };
 

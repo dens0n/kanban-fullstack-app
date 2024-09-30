@@ -37,6 +37,8 @@ function KanbanBoard({ activeProjectId }: Props) {
   useEffect(() => {
     fetchColumns();
     fetchTasks();
+    setColumns([]);
+    setTasks([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeProjectId]);
 
@@ -56,6 +58,7 @@ function KanbanBoard({ activeProjectId }: Props) {
     } catch (error) {
       sessionStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
+      window.location.reload();
     }
   };
 
@@ -73,6 +76,7 @@ function KanbanBoard({ activeProjectId }: Props) {
     } catch (error) {
       sessionStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
+      window.location.reload();
     }
   };
 
@@ -91,6 +95,7 @@ function KanbanBoard({ activeProjectId }: Props) {
     } catch (error: any) {
       sessionStorage.removeItem("isLoggedIn");
       console.error(error.response.data.error);
+      window.location.reload();
     }
   };
 
@@ -111,6 +116,7 @@ function KanbanBoard({ activeProjectId }: Props) {
     } catch (error) {
       sessionStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
+      window.location.reload();
     }
   };
 
@@ -125,9 +131,10 @@ function KanbanBoard({ activeProjectId }: Props) {
     } catch (error) {
       sessionStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
+      window.location.reload();
     }
   };
-
+  //remove isLogged in from session storage and reload the page
   const updateTask = async (id: Id, content: string) => {
     if (!content) return;
     try {
@@ -145,6 +152,7 @@ function KanbanBoard({ activeProjectId }: Props) {
     } catch (error) {
       sessionStorage.removeItem("isLoggedIn");
       console.error("Error fetching tasks:", error);
+      window.location.reload();
     }
   };
 
