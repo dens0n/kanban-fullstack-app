@@ -7,40 +7,77 @@ const Auth: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState<boolean>(true);
+  const [authState, setAuthState] = useState<"Log in" | "Sign up">("Log in");
+  const [name, setName] = useState<string>("");
+  const endpoint = isLogin ? "login" : "signup";
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
 
     try {
+      console.log(name, email, password);
       const response = await axios.post(
-        `http://localhost:3000/api/login`,
-        { email, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true, // This ensures cookies are included in the request
-        },
+        `http://localhost:3000/api/${endpoint}`,
+        isLogin ? { email, password } : { name, email, password },
+        isLogin ? { withCredentials: true } : {},
       );
 
-      if (response.status !== 200) {
-        throw new Error("Login failed");
-      }
+      console.log(response.data);
 
-      navigate("/kanban");
+      if (isLogin) {
+        navigate("/kanban");
+      } else {
+        setAuthState("Log in");
+        setIsLogin(true);
+        setName("");
+        setEmail("");
+        setPassword("");
+      }
     } catch (error) {
       console.log(error);
+      setError(
+        `${authState} failed. Please check your credentials and try again.`,
+      );
+    }
+  };
 
-      setError("Login failed. Please check your credentials and try again.");
+  const toggleAuthState = () => {
+    if (authState === "Log in") {
+      setIsLogin(false);
+      setAuthState("Sign up");
+    } else {
+      setIsLogin(true);
+      setAuthState("Log in");
     }
   };
 
   return (
     <div className="flex h-screen flex-col items-center justify-center">
-      <div className="flex h-[600px] w-[800px] flex-col items-center justify-start gap-20 bg-columnBackgroundColor p-16">
-        <h2 className="text-3xl">Login</h2>
+      <div className="relative flex h-[600px] w-[800px] flex-col items-center justify-start gap-20 bg-columnBackgroundColor p-16">
+        <button
+          onClick={toggleAuthState}
+          className="absolute right-0 top-0 m-10 rounded-lg border-2 border-gray-300 px-3 py-1 text-gray-300 hover:border-gray-50 hover:text-gray-50"
+        >
+          {authState === "Log in" ? "Sign up" : "Log in"}
+        </button>
+        <h2 className="text-3xl">{authState}</h2>
         <form className="flex flex-col gap-8" onSubmit={handleSubmit}>
+          {!isLogin && (
+            <div>
+              <input
+                className="min-w[350px] flex h-[60px] w-[350px] rounded-lg border-2 bg-black px-2 outline-none focus:border-rose-500"
+                type="text"
+                id="name"
+                name="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                placeholder="Name..."
+              />
+            </div>
+          )}
           <div>
             <input
               className="min-w[350px] flex h-[60px] w-[350px] rounded-lg border-2 bg-black px-2 outline-none focus:border-rose-500"
@@ -70,7 +107,7 @@ const Auth: React.FC = () => {
             className="min-w[350px] flex h-[60px] w-[350px] cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-white bg-mainBackgroundColor p-4 ring-rose-500 hover:ring-2"
             type="submit"
           >
-            Login
+            {authState}
           </button>
         </form>
       </div>
